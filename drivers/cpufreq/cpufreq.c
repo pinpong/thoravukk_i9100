@@ -1964,3 +1964,4 @@ register_syscore_ops(&cpufreq_syscore_ops);
 return 0;
 }
 core_initcall(cpufreq_core_init);
+
