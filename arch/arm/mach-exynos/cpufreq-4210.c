@@ -453,4 +453,3 @@ pr_debug("%s: failed initialization\n", __func__);
 return -EINVAL;
 }
 EXPORT_SYMBOL(exynos4210_cpufreq_init);
-

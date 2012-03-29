@@ -646,4 +646,3 @@ err_vdd_arm:
 	return -EINVAL;
 }
 late_initcall(exynos_cpufreq_init);
-
