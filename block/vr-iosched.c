@@ -41,8 +41,8 @@ BACKWARD,
 
 static const int sync_expire = HZ / 2; /* max time before a sync is submitted. */
 static const int async_expire = 5 * HZ; /* ditto for async, these limits are SOFT! */
-static const int fifo_batch = 16;
-static const int rev_penalty = 10; /* penalty for reversing head direction */
+static const int fifo_batch = 1;
+static const int rev_penalty = 1; /* penalty for reversing head direction */
 
 struct vr_data {
 struct rb_root sort_list;
@@ -79,6 +79,7 @@ vr_move_request(vd, alias);
 alias = elv_rb_add(&vd->sort_list, rq);
 BUG_ON(alias);
 }
+elv_rb_add(&vd->sort_list, rq);
 
 if (blk_rq_pos(rq) >= vd->last_sector) {
 if (!vd->next_rq || blk_rq_pos(vd->next_rq) > blk_rq_pos(rq))
@@ -444,6 +445,3 @@ module_exit(vr_exit);
 MODULE_AUTHOR("Aaron Carroll");
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("V(R) IO scheduler");
-
-
-
