@@ -19,7 +19,6 @@
 #include <linux/nodemask.h>
 #include <linux/sched.h>
 #include <linux/cpumask.h>
-<<<<<<< HEAD
 #include <linux/cpuset.h>
 
 #ifdef CONFIG_CPU_FREQ
@@ -30,8 +29,6 @@
 #include <linux/debugfs.h>
 #include <linux/uaccess.h>	/* for copy_from_user */
 #endif
-=======
->>>>>>> f2afdaa... ARM: cpu topology: modify cpu topology
 
 #include <asm/cputype.h>
 #include <asm/topology.h>
@@ -74,7 +71,6 @@ static DEFINE_PER_CPU(unsigned int, cpu_scale);
  */
 
 unsigned int advanced_topology = 1;
-<<<<<<< HEAD
 
 static void normal_cpu_topology_mask(void);
 static void (*set_cpu_topology_mask)(void) = normal_cpu_topology_mask;
@@ -245,8 +241,6 @@ int arch_sd_sibling_asym_packing(void)
 		return SD_ASYM_PACKING;
 	return 0;
 }
-=======
->>>>>>> f2afdaa... ARM: cpu topology: modify cpu topology
 
 /*
  * default topology function
@@ -318,10 +312,6 @@ static void normal_cpu_topology_mask(void)
  */
 static void power_cpu_topology_mask_CA9(void)
 {
-<<<<<<< HEAD
-=======
-
->>>>>>> f2afdaa... ARM: cpu topology: modify cpu topology
 	unsigned int cpuid, cpu;
 
 	for_each_possible_cpu(cpuid) {
@@ -346,10 +336,7 @@ static void power_cpu_topology_mask_CA9(void)
 				}
 			}
 		}
-<<<<<<< HEAD
 		set_power_scale(cpuid, ARM_CORTEX_A9_POWER_SCALE);
-=======
->>>>>>> f2afdaa... ARM: cpu topology: modify cpu topology
 	}
 	smp_wmb();
 }
@@ -464,11 +451,7 @@ int arch_update_cpu_topology(void)
 	/* set topology policy */
 	update_cpu_topology_policy();
 
-<<<<<<< HEAD
 	/* set topology mask and power */
-=======
-	/* set topology mask*/
->>>>>>> f2afdaa... ARM: cpu topology: modify cpu topology
 	(*set_cpu_topology_mask)();
 
 	return 1;
