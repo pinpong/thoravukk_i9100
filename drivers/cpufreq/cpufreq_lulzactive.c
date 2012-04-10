@@ -36,7 +36,7 @@
 #define LULZACTIVE_AUTHOR	"tegrak"
 
 // if you changed some codes for optimization, just write your name here.
-#define LULZACTIVE_TUNER "siyah"
+#define LULZACTIVE_TUNER "pinpong"
 
 #define LOGI(fmt...) printk(KERN_INFO "[lulzactive] " fmt)
 #define LOGW(fmt...) printk(KERN_WARNING "[lulzactive] " fmt)
@@ -100,14 +100,14 @@ enum {
 /*
  * CPU freq will be increased if measured load > inc_cpu_load;
  */
-#define DEFAULT_INC_CPU_LOAD 60
+#define DEFAULT_INC_CPU_LOAD 55
 static unsigned long inc_cpu_load;
 
 /*
  * CPU freq will be decreased if measured load < dec_cpu_load;
  * not implemented yet.
  */
-#define DEFAULT_DEC_CPU_LOAD 30
+#define DEFAULT_DEC_CPU_LOAD 35
 static unsigned long dec_cpu_load;
 
 /*
@@ -1146,4 +1146,3 @@ module_exit(cpufreq_lulzactive_exit);
 MODULE_AUTHOR("Tegrak <luciferanna@gmail.com>");
 MODULE_DESCRIPTION("'lulzactive' - improved interactive governor inspired by smartass");
 MODULE_LICENSE("GPL");
-

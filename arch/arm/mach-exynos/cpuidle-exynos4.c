@@ -294,6 +294,7 @@ static int loop_sdmmc_check(void)
 	return 0;
 }
 
+#if 0
 /*
  * Check USBOTG is working or not
  * GOTGCTL(0xEC000000)
@@ -311,6 +312,7 @@ static int check_usbotg_op(void)
 
 	return val & (A_SESSION_VALID | B_SESSION_VALID);
 }
+#endif
 
 #ifdef CONFIG_SND_SAMSUNG_RP
 extern int srp_get_op_level(void);	/* By srp driver */
@@ -663,21 +665,24 @@ static struct cpuidle_driver exynos4_idle_driver = {
 	.owner		= THIS_MODULE,
 };
 
+#if 0
 static unsigned int cpu_core;
 static unsigned int old_div;
 static DEFINE_SPINLOCK(idle_lock);
+#endif
 
 static int exynos4_enter_idle(struct cpuidle_device *dev,
 			      struct cpuidle_state *state)
 {
 	struct timeval before, after;
 	int idle_time;
-	int cpu;
-	unsigned int tmp;
+	//int cpu;
+	//unsigned int tmp;
 
 	local_irq_disable();
 	do_gettimeofday(&before);
 
+#if 0
 	if (use_clock_down == SW_CLK_DWN) {
 		/* USE SW Clock Down */
 		cpu = get_cpu();
@@ -717,6 +722,7 @@ static int exynos4_enter_idle(struct cpuidle_device *dev,
 
 		put_cpu();
 	} else
+#endif
 		cpu_do_idle();
 
 	do_gettimeofday(&after);

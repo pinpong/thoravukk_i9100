@@ -51,9 +51,6 @@
 #if defined(CONFIG_S5P_MEM_CMA)
 #include <linux/cma.h>
 #endif
-#ifdef CONFIG_ANDROID_RAM_CONSOLE
-#include <linux/bootmem.h>
-#endif
 #ifdef CONFIG_ANDROID_PMEM
 #include <linux/android_pmem.h>
 #endif
@@ -2353,7 +2350,7 @@ static struct regulator_init_data buck2_init_data = {
 static struct regulator_init_data buck3_init_data = {
 	.constraints	= {
 		.name		= "G3D_1.1V",
-		.min_uV		= 900000,
+		.min_uV		= 800000,
 		.max_uV		= 1200000,
 		.always_on	= 0,
 		.boot_on	= 0,
@@ -3001,7 +2998,7 @@ void sec_set_main_mic_bias(bool on)
 
 void sec_set_ldo1_constraints(int disabled)
 {
-#if defined(CONFIG_TARGET_LOCALE_NAATT_TEMP)
+#if 0				/* later */
 	/* VDD33_ADC */
 	ldo1_init_data.constraints.state_mem.disabled = disabled;
 	ldo1_init_data.constraints.state_mem.enabled = !disabled;
@@ -3785,7 +3782,6 @@ struct gpio_keys_button u1_buttons[] = {
 		.wakeup = 1,
 		.isr_hook = sec_debug_check_crash_key,
 	},			/* power key */
-#if !defined(CONFIG_TARGET_LOCALE_NAATT_TEMP)
 	{
 		.code = KEY_HOME,
 		.gpio = GPIO_OK_KEY,
@@ -3793,7 +3789,6 @@ struct gpio_keys_button u1_buttons[] = {
 		.type = EV_KEY,
 		.wakeup = 1,
 	},			/* ok key */
-#endif
 };
 
 struct gpio_keys_platform_data u1_keypad_platform_data = {
@@ -3961,7 +3956,7 @@ static u8 t8_config[] = { GEN_ACQUISITIONCONFIG_T8,
 static u8 t9_config[] = { TOUCH_MULTITOUCHSCREEN_T9,
 	131, 0, 0, 19, 11, 0, 32, MXT224_THRESHOLD_BATT, 2, 1,
 	0,
-	3,			/* MOVHYSTI */
+	5,			/* MOVHYSTI */
 	1, MXT224_MOVFILTER_BATT, MXT224_MAX_MT_FINGERS, 5, 40, 10, 31, 3,
 	223, 1, 0, 0, 0, 0, 143, 55, 143, 90, 18
 };
@@ -4101,7 +4096,7 @@ static u8 t8_config_e[] = { GEN_ACQUISITIONCONFIG_T8,
 static u8 t9_config_e[] = { TOUCH_MULTITOUCHSCREEN_T9,
 	139, 0, 0, 19, 11, 0, MXT224E_BLEN_BATT, MXT224E_THRESHOLD_BATT, 2, 1,
 	10,
-	3,			/* MOVHYSTI */
+	10,			/* MOVHYSTI */
 	1, MXT224E_MOVFILTER_BATT, MXT224_MAX_MT_FINGERS, 5, 40, 10, 31, 3,
 	223, 1, 10, 10, 10, 10, 143, 40, 143, 80,
 	18, 15, 50, 50, 0
@@ -4111,7 +4106,7 @@ static u8 t9_config_e[] = { TOUCH_MULTITOUCHSCREEN_T9,
 static u8 t9_config_e[] = { TOUCH_MULTITOUCHSCREEN_T9,
 	139, 0, 0, 19, 11, 0, MXT224E_BLEN_BATT, MXT224E_THRESHOLD_BATT, 2, 1,
 	10,
-	3,			/* MOVHYSTI */
+	10,			/* MOVHYSTI */
 	1, MXT224E_MOVFILTER_BATT, MXT224_MAX_MT_FINGERS, 5, 40, 10, 31, 3,
 	223, 1, 10, 10, 10, 10, 143, 40, 143, 80,
 	18, 15, 50, 50, 2
@@ -4121,7 +4116,7 @@ static u8 t9_config_e[] = { TOUCH_MULTITOUCHSCREEN_T9,
 static u8 t9_config_e[] = { TOUCH_MULTITOUCHSCREEN_T9,
 	139, 0, 0, 19, 11, 0, MXT224E_BLEN_BATT, MXT224E_THRESHOLD_BATT, 2, 1,
 	10,
-	3,			/* MOVHYSTI */
+	15,			/* MOVHYSTI */
 	1, MXT224E_MOVFILTER_BATT, MXT224_MAX_MT_FINGERS, 5, 40, 10, 31, 3,
 	223, 1, 10, 10, 10, 10, 143, 40, 143, 80,
 	18, 15, 50, 50, MXT224E_NEXTTCHDI_NORMAL
@@ -5348,44 +5343,6 @@ static void __init mipi_fb_init(void)
 }
 #endif
 
-#ifdef CONFIG_ANDROID_RAM_CONSOLE
-static struct resource ram_console_resource[] = {
-	{
-		.flags = IORESOURCE_MEM,
-	}
-};
-
-static struct platform_device ram_console_device = {
-	.name = "ram_console",
-	.id = -1,
-	.num_resources = ARRAY_SIZE(ram_console_resource),
-	.resource = ram_console_resource,
-};
-
-static int __init setup_ram_console_mem(char *str)
-{
-	unsigned size = memparse(str, &str);
-
-	if (size && (*str == '@')) {
-		unsigned long long base = 0;
-
-		base = simple_strtoul(++str, &str, 0);
-		if (reserve_bootmem(base, size, BOOTMEM_EXCLUSIVE)) {
-			pr_err("%s: failed reserving size %d "
-			       "at base 0x%llx\n", __func__, size, base);
-			return -1;
-		}
-
-		ram_console_resource[0].start = base;
-		ram_console_resource[0].end = base + size - 1;
-		pr_err("%s: %x at %llx\n", __func__, size, base);
-	}
-	return 0;
-}
-
-__setup("ram_console=", setup_ram_console_mem);
-#endif
-
 #ifdef CONFIG_ANDROID_PMEM
 static struct android_pmem_platform_data pmem_pdata = {
 	.name = "pmem",
@@ -5694,9 +5651,6 @@ static struct platform_device *smdkc210_devices[] __initdata = {
 	&s5p_device_cec,
 	&s5p_device_hpd,
 #endif
-#ifdef CONFIG_ANDROID_RAM_CONSOLE
-	&ram_console_device,
-#endif
 #ifdef CONFIG_ANDROID_PMEM
 	&pmem_device,
 	&pmem_gpu1_device,
@@ -5769,9 +5723,9 @@ static struct platform_device *smdkc210_devices[] __initdata = {
 #ifdef CONFIG_EXYNOS4_SETUP_THERMAL
 /* below temperature base on the celcius degree */
 struct s5p_platform_tmu u1_tmu_data __initdata = {
-	.ts = {
-		.stop_1st_throttle  = 61,
-		.start_1st_throttle = 64,
+	.ts = { 
+		.stop_1st_throttle  = 75,
+		.start_1st_throttle = 82,
 		.stop_2nd_throttle  = 87,
 		.start_2nd_throttle = 103,
 		.start_tripping     = 110,
@@ -6048,14 +6002,6 @@ static void __init smdkc210_map_io(void)
 	exynos4_reserve_mem();
 #else
 	s5p_reserve_mem(S5P_RANGE_MFC);
-#endif
-
-#ifdef CONFIG_ANDROID_RAM_CONSOLE
-if (!reserve_bootmem(0x4d900000, (1 << CONFIG_LOG_BUF_SHIFT), BOOTMEM_EXCLUSIVE)) {
-	ram_console_resource[0].start = 0x4d900000;
-    ram_console_resource[0].end = ram_console_resource[0].start + (1 << CONFIG_LOG_BUF_SHIFT) - 1;
-    pr_err("%s ram_console_resource[0].start: %x, end: %x\n", __func__, ram_console_resource[0].start, ram_console_resource[0].end);	
-}
 #endif
 
 	/* as soon as INFORM3 is visible, sec_debug is ready to run */

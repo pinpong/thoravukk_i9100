@@ -54,7 +54,7 @@
 static void do_dbs_timer(struct work_struct *work);
 static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 		unsigned int event);
-static int sakuractive_boost(struct cpufreq_policy *policy);
+//static int hotplug_boost(struct cpufreq_policy *policy);
 
 #ifndef CONFIG_CPU_FREQ_DEFAULT_GOV_SAKURACTIVE
 static
@@ -745,6 +745,7 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 	return 0;
 }
 
+#if 0
 static int hotplug_boost(struct cpufreq_policy *policy)
 {
 	unsigned int cpu = policy->cpu;
@@ -766,6 +767,7 @@ static int hotplug_boost(struct cpufreq_policy *policy)
 
 	return 0;
 }
+#endif
 
 static int __init cpufreq_gov_dbs_init(void)
 {
@@ -812,4 +814,3 @@ fs_initcall(cpufreq_gov_dbs_init);
 module_init(cpufreq_gov_dbs_init);
 #endif
 module_exit(cpufreq_gov_dbs_exit);
-

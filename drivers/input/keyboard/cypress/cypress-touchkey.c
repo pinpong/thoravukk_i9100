@@ -71,12 +71,11 @@ touchkey register
 #define ENABLE_BL	1
 #define BL_ALWAYS_ON	-1
 #define BL_ALWAYS_OFF	-2
-#define BL_STANDARD	3000
-
 #ifdef CONFIG_TARGET_CM_KERNEL
 #define DISABLE_BL	2
 #else
 #define DISABLE_BL	0
+#define BL_STANDARD	500
 #define BLN_VERSION 10
 #endif
 
@@ -84,7 +83,7 @@ int screen_on = 1;
 int notification_timeout = -1;  /* never time out */
 #ifdef CONFIG_TARGET_CM_KERNEL
 int led_on = 0;
-int led_timeout = BL_STANDARD; /* never time out */
+int led_timeout = BL_ALWAYS_ON; /* never time out */
 int notification_enabled = -1;  /* disabled by default */
 #else
 int led_on = -1;
