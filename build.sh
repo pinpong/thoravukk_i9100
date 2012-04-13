@@ -11,7 +11,7 @@ setup ()
 
     KERNEL_DIR="$(dirname "$(readlink -f "$0")")"
     BUILD_DIR="$KERNEL_DIR/build"
-    MODULES=("drivers/samsung/fm_si4709/Si4709_driver.ko" "drivers/scsi/scsi_wait_scan.ko" "drivers/net/wireless/bcmdhd/dhd.ko")
+    MODULES=("drivers/samsung/fm_si4709/Si4709_driver.ko" "drivers/scsi/scsi_wait_scan.ko" "drivers/net/wireless/bcmdhd/dhd.ko" "fs/cifs/cifs.ko" )
 
     if [ x = "x$NO_CCACHE" ] && ccache -V &>/dev/null ; then
         CCACHE=ccache
@@ -43,7 +43,7 @@ build ()
         mka -C "$KERNEL_DIR" O="$target_dir" ARCH=arm HOSTCC="$CCACHE gcc" CROSS_COMPILE="$CCACHE $CROSS_PREFIX" zImage
         cp "$target_dir"/arch/arm/boot/zImage $ANDROID_BUILD_TOP/device/samsung/$target/zImage
         for module in "${MODULES[@]}" ; do
-            cp "$target_dir/$module" $ANDROID_BUILD_TOP/device/samsung/$target/modules
+        cp "$target_dir/$module" $ANDROID_BUILD_TOP/device/samsung/$target/modules
         done
     fi
 }

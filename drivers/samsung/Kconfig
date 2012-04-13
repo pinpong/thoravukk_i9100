@@ -16,6 +16,13 @@ menuconfig FM_RADIO
 	help
 	  Say Y to enable FM Radio Driver
 
+menuconfig J4FS
+	tristate "Samsung J4FS support"
+	depends on SAMSUNG_MODULES
+	default m
+	help
+	  Say Y to enable Samsung J4FS support.
+
 menuconfig FM_SI4709
 	tristate "Si4709 FM radio"
 	depends on FM_RADIO
