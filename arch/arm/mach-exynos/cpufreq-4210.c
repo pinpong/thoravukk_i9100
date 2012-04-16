@@ -101,16 +101,16 @@ static unsigned int clkdiv_cpu0[CPUFREQ_LEVEL_END][7] = {
 	/* ARM L7: 800MHz */
 	{ 0, 3, 7, 3, 4, 1, 7 },
 
-	/* ARM L9: 700MHz */
+	/* ARM L8: 700MHz */
 	{ 0, 3, 7, 3, 3, 1, 7 },
 
-	/* ARM L11: 500MHz */
+	/* ARM L9: 500MHz */
 	{ 0, 3, 7, 3, 3, 1, 7 },
 
-	/* ARM L14: 200MHz */
+	/* ARM L10: 200MHz */
 	{ 0, 1, 3, 1, 3, 1, 7 },
 
-	/* ARM L15: 100MHz */
+	/* ARM L11: 100MHz */
 	{ 0, 1, 3, 1, 3, 1, 7 },
 };
 
@@ -142,16 +142,16 @@ static unsigned int clkdiv_cpu1[CPUFREQ_LEVEL_END][2] = {
 	/* ARM L7: 800MHz */
 	{ 4, 0 },
 
-	/* ARM L9: 700MHz */
+	/* ARM L8: 700MHz */
 	{ 3, 0 },
 
-	/* ARM L11: 500MHz */
+	/* ARM L9: 500MHz */
 	{ 3, 0 },
 
-	/* ARM L14: 200MHz */
+	/* ARM L10: 200MHz */
 	{ 3, 0 },
 
-	/* ARM L15: 100MHz */
+	/* ARM L11: 100MHz */
 	{ 3, 0 },
 };
 
@@ -180,16 +180,16 @@ static unsigned int exynos4_apll_pms_table[CPUFREQ_LEVEL_END] = {
 	/* APLL FOUT L7: 800MHz */
 	((225<<16)|(6<<8)|(0x1)),
 
-	/* APLL FOUT L9: 700MHz */
+	/* APLL FOUT L8: 700MHz */
 	((350<<16)|(6<<8)|(0x2)),
 
-	/* APLL FOUT L11: 500MHz */
+	/* APLL FOUT L9: 500MHz */
 	((250<<16)|(6<<8)|(0x2)),
 
-	/* APLL FOUT L14: 200MHz */
+	/* APLL FOUT L10: 200MHz */
 	((200<<16)|(6<<8)|(0x3)),
 
-	/* APLL FOUT L15: 100MHz */
+	/* APLL FOUT L11: 100MHz */
 	((200<<16)|(6<<8)|(0x4)),
 };
 
@@ -474,7 +474,7 @@ int exynos4210_cpufreq_init(struct exynos_dvfs_info *info)
 	 * Should always be the 800Mhz step as imposed
 	 * by the Samsung exynos hardware.	--Fluxi
 	*/
-	info->pm_lock_idx = L8;
+	info->pm_lock_idx = L7;
 	info->pll_safe_idx = L6;
 	info->max_support_idx = max_support_idx;
 	info->min_support_idx = min_support_idx;
