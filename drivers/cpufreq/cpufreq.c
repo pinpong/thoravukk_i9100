@@ -33,7 +33,7 @@
 
 #include <trace/events/power.h>
 
-int exynos4210_volt_table[16];
+int exynos4210_volt_table[13];
 
 /**
  * The "cpufreq driver" - the arch- or hardware-dependent low
@@ -563,9 +563,7 @@ static ssize_t show_scaling_setspeed(struct cpufreq_policy *policy, char *buf)
 static ssize_t show_UV_mV_table(struct cpufreq_policy *policy, char *buf) {
 
       return sprintf(buf,
-"1600mhz: %d mV\n\
-1500mhz: %d mV\n\
-1400mhz: %d mV\n\
+"1400mhz: %d mV\n\
 1300mhz: %d mV\n\
 1200mhz: %d mV\n\
 1100mhz: %d mV\n\
@@ -577,8 +575,7 @@ static ssize_t show_UV_mV_table(struct cpufreq_policy *policy, char *buf) {
 500mhz: %d mV\n\
 400mhz: %d mV\n\
 300mhz: %d mV\n\
-200mhz: %d mV\n\
-100mhz: %d mV\n",
+200mhz: %d mV\n",
 		exynos4210_volt_table[0]/1000,
 		exynos4210_volt_table[1]/1000,
 		exynos4210_volt_table[2]/1000,
@@ -591,10 +588,7 @@ static ssize_t show_UV_mV_table(struct cpufreq_policy *policy, char *buf) {
 		exynos4210_volt_table[9]/1000,
 		exynos4210_volt_table[10]/1000,
 		exynos4210_volt_table[11]/1000,
-		exynos4210_volt_table[12]/1000,
-		exynos4210_volt_table[13]/1000,
-		exynos4210_volt_table[14]/1000,
-		exynos4210_volt_table[15]/1000);
+		exynos4210_volt_table[12]/1000);
 }
 
 static ssize_t store_UV_mV_table(struct cpufreq_policy *policy,
@@ -602,7 +596,7 @@ static ssize_t store_UV_mV_table(struct cpufreq_policy *policy,
 
 	unsigned int ret = -EINVAL;
 	int i = 0;
-	ret = sscanf(buf, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
+	ret = sscanf(buf, "%d %d %d %d %d %d %d %d %d %d %d %d %d",
 		&exynos4210_volt_table[0],
 		&exynos4210_volt_table[1],
 		&exynos4210_volt_table[2],
@@ -615,19 +609,16 @@ static ssize_t store_UV_mV_table(struct cpufreq_policy *policy,
 		&exynos4210_volt_table[9],
 		&exynos4210_volt_table[10],
 		&exynos4210_volt_table[11],
-		&exynos4210_volt_table[12],
-		&exynos4210_volt_table[13],
-		&exynos4210_volt_table[14],
-		&exynos4210_volt_table[15]);
+		&exynos4210_volt_table[12]);
 
-	if(ret != 16) {
+	if(ret != 13) {
 		return -EINVAL;
 	} else {
-		for (i = 0; i < 16; i++) {
+		for (i = 0; i < 13; i++) {
 			exynos4210_volt_table[i] *= 1000;
 
-			if (exynos4210_volt_table[i] > 1500000) {
-				exynos4210_volt_table[i] = 1500000;
+			if (exynos4210_volt_table[i] > 1300000) {
+				exynos4210_volt_table[i] = 1300000;
 
 			} else if (exynos4210_volt_table[i] < 800000) {
 				exynos4210_volt_table[i] = 800000;

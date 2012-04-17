@@ -23,7 +23,7 @@
 
 #include <plat/clock.h>
 
-#define CPUFREQ_LEVEL_END	L16
+#define CPUFREQ_LEVEL_END	L13
 
 static int max_support_idx;
 static int min_support_idx = (CPUFREQ_LEVEL_END - 1);
@@ -40,22 +40,19 @@ struct cpufreq_clkdiv {
 extern int exynos4210_volt_table[CPUFREQ_LEVEL_END];
 
 static struct cpufreq_frequency_table exynos4210_freq_table[] = {
-	{L0, 1600*1000},
-	{L1, 1500*1000},
-	{L2, 1400*1000},
-	{L3, 1300*1000},
-	{L4, 1200*1000},
-	{L5, 1100*1000},
-	{L6, 1000*1000},
-	{L7, 900*1000},
-	{L8, 800*1000},
-	{L9, 700*1000},
-	{L10, 600*1000},
-	{L11, 500*1000},
-	{L12, 400*1000},
-	{L13, 300*1000},
-	{L14, 200*1000},
-	{L15, 100*1000},
+	{L0, 1400*1000},
+	{L1, 1300*1000},
+	{L2, 1200*1000},
+	{L3, 1100*1000},
+	{L4, 1000*1000},
+	{L5, 900*1000},
+	{L6, 800*1000},
+	{L7, 700*1000},
+	{L8, 600*1000},
+	{L9, 500*1000},
+	{L10, 400*1000},
+	{L11, 300*1000},
+	{L12, 200*1000},
 	{0, CPUFREQ_TABLE_END},
 };
 
@@ -73,9 +70,6 @@ static struct cpufreq_clkdiv exynos4210_clkdiv_table[] = {
 	{L10, 0},
 	{L11, 0},
 	{L12, 0},
-	{L13, 0},
-	{L14, 0},
-	{L15, 0},
 };
 
 static unsigned int clkdiv_cpu0[CPUFREQ_LEVEL_END][7] = {
@@ -84,12 +78,6 @@ static unsigned int clkdiv_cpu0[CPUFREQ_LEVEL_END][7] = {
 	 * { DIVCORE, DIVCOREM0, DIVCOREM1, DIVPERIPH,
 	 *		DIVATB, DIVPCLK_DBG, DIVAPLL }
 	 */
-	/* ARM L0: 1600MHz */
-	{ 0, 3, 7, 3, 4, 1, 7 },
-
-	/* ARM L1: 1500MHz */
-	{ 0, 3, 7, 3, 4, 1, 7 },
-
 	/* ARM L2: 1400MHz */
 	{ 0, 3, 7, 3, 4, 1, 7 },
 
@@ -127,9 +115,6 @@ static unsigned int clkdiv_cpu0[CPUFREQ_LEVEL_END][7] = {
 	{ 0, 3, 7, 3, 3, 1, 7 },
 
 	/* ARM L14: 200MHz */
-	{ 0, 1, 3, 1, 3, 1, 7 },
-
-	/* ARM L15: 100MHz */
 	{ 0, 1, 3, 1, 3, 1, 7 },
 };
 
@@ -137,12 +122,6 @@ static unsigned int clkdiv_cpu1[CPUFREQ_LEVEL_END][2] = {
 	/* Clock divider value for following
 	 * { DIVCOPY, DIVHPM }
 	 */
-	/* ARM L0: 1600MHz */
-	{ 5, 0 },
-
-	/* ARM L1: 1500MHz */
-	{ 5, 0 },
-
 	/* ARM L2: 1400MHz */
 	{ 5, 0 },
 
@@ -181,18 +160,9 @@ static unsigned int clkdiv_cpu1[CPUFREQ_LEVEL_END][2] = {
 
 	/* ARM L14: 200MHz */
 	{ 3, 0 },
-
-	/* ARM L15: 100MHz */
-	{ 3, 0 },
 };
 
 static unsigned int exynos4_apll_pms_table[CPUFREQ_LEVEL_END] = {
-	/* APLL FOUT L0: 1600MHz */
-	((200<<16)|(3<<8)|(0x1)),
-
-	/* APLL FOUT L1: 1500MHz */
-	((375<<16)|(6<<8)|(0x1)),
-
 	/* APLL FOUT L2: 1400MHz */
 	((350<<16)|(6<<8)|(0x1)),
 
@@ -231,9 +201,6 @@ static unsigned int exynos4_apll_pms_table[CPUFREQ_LEVEL_END] = {
 
 	/* APLL FOUT L14: 200MHz */
 	((200<<16)|(6<<8)|(0x3)),
-
-	/* APLL FOUT L15: 100MHz */
-	((200<<16)|(6<<8)|(0x4)),
 };
 
 /*
@@ -242,8 +209,6 @@ static unsigned int exynos4_apll_pms_table[CPUFREQ_LEVEL_END] = {
 
 static const unsigned int asv_voltage_A[CPUFREQ_LEVEL_END][8] = {
 
-	{ 1500000, 1475000, 1450000, 1425000, 1400000, 1375000, 1350000, 1325000 },	//1600MHz
-	{ 1450000, 1425000, 1400000, 1375000, 1350000, 1325000, 1300000, 1275000 },	//1500MHz
 	{ 1400000, 1375000, 1350000, 1325000, 1300000, 1275000, 1250000, 1225000 },	//1400MHz
 	{ 1350000, 1325000, 1300000, 1275000, 1250000, 1225000, 1200000, 1175000 },	//1300MHz
 	{ 1300000, 1275000, 1250000, 1225000, 1200000, 1175000, 1150000, 1125000 },	//1200MHz
@@ -257,7 +222,6 @@ static const unsigned int asv_voltage_A[CPUFREQ_LEVEL_END][8] = {
 	{ 1100000, 1075000, 1050000, 1025000, 1000000,  975000,  950000,  925000 },	// 400MHz
 	{ 1075000, 1050000, 1025000, 1000000,  975000,  950000,  925000,  900000 },	// 300MHz
 	{ 1050000, 1025000, 1000000,  975000,  950000,  925000,  900000,  875000 },	// 200MHz
-	{ 1025000, 1000000,  975000,  950000,  925000,  900000,  875000,  850000 },	// 100MHz
 
 };
 
@@ -275,8 +239,8 @@ static const unsigned int asv_voltage_B[CPUFREQ_LEVEL_END][5] = {
 	{ 1325000, 1275000, 1225000, 1175000, 1150000 },
 	{ 1225000, 1175000, 1125000, 1075000, 1050000 },
 	{ 1150000, 1100000, 1050000, 1000000, 975000 },
-	{ 1050000, 1000000, 950000, 950000, 950000 },
-	{ 1025000, 975000, 950000, 950000, 950000 },
+	{ 1050000, 1000000,  950000,  950000, 950000 },
+	{ 1025000,  975000,  950000,  950000, 950000 },
 
 };
 
@@ -520,10 +484,10 @@ int exynos4210_cpufreq_init(struct exynos_dvfs_info *info)
 	/*
 	 * Sleep of death fix for overclock freq tables.
 	 * Should always be the 800Mhz step as imposed
-	 * by the Samsung exynos hardware.	--Fluxi
+	 * by the Samsung exynos hardware.
 	*/
-	info->pm_lock_idx = L8;
-	info->pll_safe_idx = L6;
+	info->pm_lock_idx = L6;
+	info->pll_safe_idx = L4;
 	info->max_support_idx = max_support_idx;
 	info->min_support_idx = min_support_idx;
 	info->cpu_clk = cpu_clk;
