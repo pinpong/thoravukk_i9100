@@ -75,7 +75,7 @@ touchkey register
 #define DISABLE_BL	2
 #else
 #define DISABLE_BL	0
-#define BL_STANDARD	250
+#define BL_STANDARD	500
 #define BLN_VERSION 10
 #endif
 
