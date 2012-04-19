@@ -24,6 +24,9 @@
 
 #define CPUFREQ_NAME_LEN 16
 
+#define CPU_UV_MV_MAX 1500000
+#define CPU_UV_MV_MIN 750000
+
 
 /*********************************************************************
  *                     CPUFREQ NOTIFIER INTERFACE                    *
@@ -79,9 +82,7 @@ struct cpufreq_cpuinfo {
 
 struct cpufreq_real_policy {
 	unsigned int		min;    /* in kHz */
-	unsigned int		min_suspend;	/* in kHz */
 	unsigned int		max;    /* in kHz */
-	unsigned int		max_suspend;	/* in kHz */
 	unsigned int		policy; /* see above */
 	struct cpufreq_governor	*governor; /* see below */
 };
@@ -95,9 +96,7 @@ struct cpufreq_policy {
 	struct cpufreq_cpuinfo	cpuinfo;/* see above */
 
 	unsigned int		min;    /* in kHz */
-	unsigned int		min_suspend;	/* in kHz */
 	unsigned int		max;    /* in kHz */
-	unsigned int		max_suspend;	/* in kHz */
 	unsigned int		cur;    /* in kHz, only needed if cpufreq
 					 * governors are used */
 	unsigned int		policy; /* see above */
@@ -184,6 +183,8 @@ struct cpufreq_governor {
 			will fallback to performance governor */
 	struct list_head	governor_list;
 	struct module		*owner;
+	int disableScalingDuringSuspend;
+	int enableSmoothScaling;
 };
 
 /*

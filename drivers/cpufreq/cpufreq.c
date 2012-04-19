@@ -29,11 +29,8 @@
 #include <linux/completion.h>
 #include <linux/mutex.h>
 #include <linux/syscore_ops.h>
-#include <linux/earlysuspend.h>
 
 #include <trace/events/power.h>
-
-int exynos4210_volt_table[13];
 
 /**
  * The "cpufreq driver" - the arch- or hardware-dependent low
@@ -365,9 +362,7 @@ show_one(cpuinfo_min_freq, cpuinfo.min_freq);
 show_one(cpuinfo_max_freq, cpuinfo.max_freq);
 show_one(cpuinfo_transition_latency, cpuinfo.transition_latency);
 show_one(scaling_min_freq, min);
-show_one(scaling_min_suspend_freq, min_suspend);
 show_one(scaling_max_freq, max);
-show_one(scaling_max_suspend_freq, max_suspend);
 show_one(scaling_cur_freq, cur);
 
 static int __cpufreq_set_policy(struct cpufreq_policy *data,
@@ -398,9 +393,7 @@ static ssize_t store_##file_name					\
 }
 
 store_one(scaling_min_freq, min);
-store_one(scaling_min_suspend_freq, min_suspend);
 store_one(scaling_max_freq, max);
-store_one(scaling_max_suspend_freq, max_suspend);
 
 /**
  * show_cpuinfo_cur_freq - current CPU frequency as detected by hardware
@@ -560,73 +553,83 @@ static ssize_t show_scaling_setspeed(struct cpufreq_policy *policy, char *buf)
 	return policy->governor->show_setspeed(policy, buf);
 }
 
-static ssize_t show_UV_mV_table(struct cpufreq_policy *policy, char *buf) {
-
-      return sprintf(buf,
-"1400mhz: %d mV\n\
-1300mhz: %d mV\n\
-1200mhz: %d mV\n\
-1100mhz: %d mV\n\
-1000mhz: %d mV\n\
-900mhz: %d mV\n\
-800mhz: %d mV\n\
-700mhz: %d mV\n\
-600mhz: %d mV\n\
-500mhz: %d mV\n\
-400mhz: %d mV\n\
-300mhz: %d mV\n\
-200mhz: %d mV\n",
-		exynos4210_volt_table[0]/1000,
-		exynos4210_volt_table[1]/1000,
-		exynos4210_volt_table[2]/1000,
-		exynos4210_volt_table[3]/1000,
-		exynos4210_volt_table[4]/1000,
-		exynos4210_volt_table[5]/1000,
-		exynos4210_volt_table[6]/1000,
-		exynos4210_volt_table[7]/1000,
-		exynos4210_volt_table[8]/1000,
-		exynos4210_volt_table[9]/1000,
-		exynos4210_volt_table[10]/1000,
-		exynos4210_volt_table[11]/1000,
-		exynos4210_volt_table[12]/1000);
+extern ssize_t acpuclk_get_vdd_levels_str(char *buf);
+static ssize_t show_vdd_levels(struct cpufreq_policy *policy, char *buf)
+{
+return acpuclk_get_vdd_levels_str(buf);
 }
 
-static ssize_t store_UV_mV_table(struct cpufreq_policy *policy,
-                                      const char *buf, size_t count) {
+extern void acpuclk_set_vdd(unsigned acpu_khz, int vdd);
+static ssize_t store_vdd_levels(struct cpufreq_policy *policy, const char *buf, size_t count)
+{
+int i = 0, j;
+int pair[2] = { 0, 0 };
+int sign = 0;
 
-	unsigned int ret = -EINVAL;
-	int i = 0;
-	ret = sscanf(buf, "%d %d %d %d %d %d %d %d %d %d %d %d %d",
-		&exynos4210_volt_table[0],
-		&exynos4210_volt_table[1],
-		&exynos4210_volt_table[2],
-		&exynos4210_volt_table[3],
-		&exynos4210_volt_table[4],
-		&exynos4210_volt_table[5],
-		&exynos4210_volt_table[6],
-		&exynos4210_volt_table[7],
-		&exynos4210_volt_table[8],
-		&exynos4210_volt_table[9],
-		&exynos4210_volt_table[10],
-		&exynos4210_volt_table[11],
-		&exynos4210_volt_table[12]);
+if (count < 1)
+return 0;
 
-	if(ret != 13) {
-		return -EINVAL;
-	} else {
-		for (i = 0; i < 13; i++) {
-			exynos4210_volt_table[i] *= 1000;
-
-			if (exynos4210_volt_table[i] > 1300000) {
-				exynos4210_volt_table[i] = 1300000;
-
-			} else if (exynos4210_volt_table[i] < 800000) {
-				exynos4210_volt_table[i] = 800000;
-			}
-		}
-	}
-	return count;
+if (buf[0] == '-')
+{
+sign = -1;
+i++;
 }
+else if (buf[0] == '+')
+{
+sign = 1;
+i++;
+}
+
+for (j = 0; i < count; i++)
+{
+char c = buf[i];
+if ((c >= '0') && (c <= '9'))
+{
+pair[j] *= 10;
+pair[j] += (c - '0');
+}
+else if ((c == ' ') || (c == '\t'))
+{
+if (pair[j] != 0)
+{
+j++;
+if ((sign != 0) || (j > 1))
+break;
+}
+}
+else
+break;
+}
+
+if (sign != 0)
+{
+if (pair[0] > 0)
+acpuclk_set_vdd(0, sign * pair[0]);
+}
+else
+{
+if ((pair[0] > 0) && (pair[1] > 0))
+acpuclk_set_vdd((unsigned)pair[0], pair[1]);
+else
+return -EINVAL;
+}
+
+return count;
+}
+/* sysfs interface for UV control */
+extern ssize_t show_UV_mV_table(struct cpufreq_policy *policy, char *buf);
+extern ssize_t store_UV_mV_table(struct cpufreq_policy *policy,
+                                      const char *buf, size_t count);
+/* sysfs interface for cpu smooth scaling parameters */
+extern ssize_t show_smooth_offset(struct cpufreq_policy *policy, char *buf);
+extern ssize_t store_smooth_offset(struct cpufreq_policy *policy,
+                                      const char *buf, size_t count);
+extern ssize_t show_smooth_target(struct cpufreq_policy *policy, char *buf);
+extern ssize_t store_smooth_target(struct cpufreq_policy *policy,
+                                      const char *buf, size_t count);
+extern ssize_t show_smooth_step(struct cpufreq_policy *policy, char *buf);
+extern ssize_t store_smooth_step(struct cpufreq_policy *policy,
+                                      const char *buf, size_t count);
 
 /**
  * show_scaling_driver - show the current cpufreq HW/BIOS limitation
@@ -643,11 +646,6 @@ static ssize_t show_bios_limit(struct cpufreq_policy *policy, char *buf)
 	return sprintf(buf, "%u\n", policy->cpuinfo.max_freq);
 }
 
-extern ssize_t show_asv_group(struct cpufreq_policy *policy, char *buf);
-
-extern ssize_t store_asv_group(struct cpufreq_policy *policy,
-                                      const char *buf, size_t count);
-
 cpufreq_freq_attr_ro_perm(cpuinfo_cur_freq, 0400);
 cpufreq_freq_attr_ro(cpuinfo_min_freq);
 cpufreq_freq_attr_ro(cpuinfo_max_freq);
@@ -659,30 +657,34 @@ cpufreq_freq_attr_ro(bios_limit);
 cpufreq_freq_attr_ro(related_cpus);
 cpufreq_freq_attr_ro(affected_cpus);
 cpufreq_freq_attr_rw(scaling_min_freq);
-cpufreq_freq_attr_rw(scaling_min_suspend_freq);
 cpufreq_freq_attr_rw(scaling_max_freq);
-cpufreq_freq_attr_rw(scaling_max_suspend_freq);
 cpufreq_freq_attr_rw(scaling_governor);
 cpufreq_freq_attr_rw(scaling_setspeed);
+cpufreq_freq_attr_rw(vdd_levels);
+/* UV table */
 cpufreq_freq_attr_rw(UV_mV_table);
-cpufreq_freq_attr_rw(asv_group);
+/* smooth scaling params */
+cpufreq_freq_attr_rw(smooth_offset);
+cpufreq_freq_attr_rw(smooth_target);
+cpufreq_freq_attr_rw(smooth_step);
 
 static struct attribute *default_attrs[] = {
 	&cpuinfo_min_freq.attr,
 	&cpuinfo_max_freq.attr,
 	&cpuinfo_transition_latency.attr,
 	&scaling_min_freq.attr,
-	&scaling_min_suspend_freq.attr,
 	&scaling_max_freq.attr,
-	&scaling_max_suspend_freq.attr,
 	&affected_cpus.attr,
 	&related_cpus.attr,
 	&scaling_governor.attr,
 	&scaling_driver.attr,
 	&scaling_available_governors.attr,
 	&scaling_setspeed.attr,
+	&vdd_levels.attr,
 	&UV_mV_table.attr,
-	&asv_group.attr,
+	&smooth_offset.attr,
+	&smooth_target.attr,
+	&smooth_step.attr,
 	NULL
 };
 
@@ -1034,17 +1036,13 @@ static int cpufreq_add_dev(struct sys_device *sys_dev)
 		struct cpufreq_policy *cp = per_cpu(cpufreq_cpu_data, sibling);
 		if (cp && cp->governor && (cpumask_test_cpu(cpu, cp->related_cpus))) {
 			policy->min = cp->min;
-			policy->min_suspend = cp->min_suspend;
 			policy->max = cp->max;
-			policy->max_suspend = cp->max_suspend;
 			break;
 		}
 	}
 #endif
 	policy->user_policy.min = policy->min;
-	policy->user_policy.min_suspend = policy->min_suspend;
 	policy->user_policy.max = policy->max;
-	policy->user_policy.max_suspend = policy->max_suspend;
 
 	blocking_notifier_call_chain(&cpufreq_policy_notifier_list,
 				     CPUFREQ_START, policy);
@@ -1635,6 +1633,21 @@ int cpufreq_register_governor(struct cpufreq_governor *governor)
 	err = -EBUSY;
 	if (__find_governor(governor->name) == NULL) {
 		err = 0;
+		if (!strnicmp(governor->name, "powersave", CPUFREQ_NAME_LEN)
+		|| !strnicmp(governor->name, "performance", CPUFREQ_NAME_LEN)
+		|| !strnicmp(governor->name, "userspace", CPUFREQ_NAME_LEN)
+		)
+			governor->disableScalingDuringSuspend = 0;
+		else
+			governor->disableScalingDuringSuspend = 1;
+		if (!strnicmp(governor->name, "powersave", CPUFREQ_NAME_LEN)
+		|| !strnicmp(governor->name, "performance", CPUFREQ_NAME_LEN)
+		|| !strnicmp(governor->name, "lulzactive", CPUFREQ_NAME_LEN)
+		|| !strnicmp(governor->name, "interactive", 11)
+		)
+			governor->enableSmoothScaling = 0;
+		else
+			governor->enableSmoothScaling = 1;
 		list_add(&governor->governor_list, &cpufreq_governor_list);
 	}
 
@@ -1744,14 +1757,10 @@ static int __cpufreq_set_policy(struct cpufreq_policy *data,
 			CPUFREQ_NOTIFY, policy);
 
 	data->min = policy->min;
-	data->min_suspend = policy->min_suspend;
 	data->max = policy->max;
-	data->max_suspend = policy->max_suspend;
 
-	pr_debug("new min and max freqs are %u - %u kHz,\n	\
-		  min&max_suspend freqs are %u - %u kHz\n",
-				data->min, data->max,
-				data->min_suspend, data->max_suspend);
+	pr_debug("new min and max freqs are %u - %u kHz\n",
+					data->min, data->max);
 
 	if (cpufreq_driver->setpolicy) {
 		data->policy = policy->policy;
@@ -1818,9 +1827,7 @@ int cpufreq_update_policy(unsigned int cpu)
 	pr_debug("updating policy for CPU %u\n", cpu);
 	memcpy(&policy, data, sizeof(struct cpufreq_policy));
 	policy.min = data->user_policy.min;
-	policy.min_suspend = data->user_policy.min_suspend;
 	policy.max = data->user_policy.max;
-	policy.max_suspend = data->user_policy.max_suspend;
 	policy.policy = data->user_policy.policy;
 	policy.governor = data->user_policy.governor;
 
@@ -1986,62 +1993,6 @@ int cpufreq_unregister_driver(struct cpufreq_driver *driver)
 }
 EXPORT_SYMBOL_GPL(cpufreq_unregister_driver);
 
-static void powersave_early_suspend(struct early_suspend *handler)
-{
-	int cpu;
-
-	for_each_online_cpu(cpu) {
-		struct cpufreq_policy *cpu_policy, new_policy;
-
-		cpu_policy = cpufreq_cpu_get(cpu);
-		if (!cpu_policy)
-			continue;
-		if (cpufreq_get_policy(&new_policy, cpu))
-			goto out;
-		new_policy.max = cpu_policy->max_suspend;
-		new_policy.min = cpu_policy->min_suspend;
-		printk(KERN_INFO
-			"%s: set cpu%d freq in the %u-%u KHz range\n",
-			__func__, cpu, new_policy.min, new_policy.max);
-		__cpufreq_set_policy(cpu_policy, &new_policy);
-		cpu_policy->user_policy.policy = cpu_policy->policy;
-		cpu_policy->user_policy.governor = cpu_policy->governor;
-out:
-		cpufreq_cpu_put(cpu_policy);
-	}
-}
-
-static void powersave_late_resume(struct early_suspend *handler)
-{
-	int cpu;
-
-	for_each_online_cpu(cpu) {
-		struct cpufreq_policy *cpu_policy, new_policy;
-
-		cpu_policy = cpufreq_cpu_get(cpu);
-		if (!cpu_policy)
-			continue;
-		if (cpufreq_get_policy(&new_policy, cpu))
-			goto out;
-		new_policy.max = cpu_policy->user_policy.max;
-		new_policy.min = cpu_policy->user_policy.min;
-		printk(KERN_INFO
-			"%s: set cpu%d freq in the %u-%u KHz range\n",
-			__func__, cpu, new_policy.min, new_policy.max);
-		__cpufreq_set_policy(cpu_policy, &new_policy);
-		cpu_policy->user_policy.policy = cpu_policy->policy;
-		cpu_policy->user_policy.governor = cpu_policy->governor;
-out:
-		cpufreq_cpu_put(cpu_policy);
-	}
-}
-
-static struct early_suspend _powersave_early_suspend = {
-	.suspend = powersave_early_suspend,
-	.resume = powersave_late_resume,
-	.level = EARLY_SUSPEND_LEVEL_BLANK_SCREEN,
-};
-
 static int __init cpufreq_core_init(void)
 {
 	int cpu;
@@ -2055,7 +2006,6 @@ static int __init cpufreq_core_init(void)
 						&cpu_sysdev_class.kset.kobj);
 	BUG_ON(!cpufreq_global_kobject);
 	register_syscore_ops(&cpufreq_syscore_ops);
-	register_early_suspend(&_powersave_early_suspend);
 
 	return 0;
 }
