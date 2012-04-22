@@ -131,12 +131,8 @@
 #include <trace/events/net.h>
 #include <trace/events/skb.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
 #include <linux/inetdevice.h>
 #include <linux/cpu_rmap.h>
-=======
-#include <linux/iface_stat.h>
->>>>>>> 218e18a... Added missing Android common patches that were previously included but overwritten by the 2.3.4 code drop, Samsung have not applied any new patches from the Android common kernel tree to their kernels.
 
 #include "net-sysfs.h"
 
@@ -5162,9 +5158,6 @@ static void rollback_registered_many(struct list_head *head)
 	synchronize_net();
 
 	list_for_each_entry(dev, head, unreg_list) {
-		/* Store stats for this device in persistent iface_stat */
-		iface_stat_update(dev);
-
 		/* Shutdown queueing discipline. */
 		dev_shutdown(dev);
 

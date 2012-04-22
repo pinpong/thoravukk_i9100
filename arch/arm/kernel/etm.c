@@ -697,11 +697,7 @@ static struct kobj_attribute trace_data_range_attr =
 	__ATTR(trace_data_range, 0644,
 		trace_data_range_show, trace_data_range_store);
 
-<<<<<<< HEAD
 static int __devinit etm_probe(struct amba_device *dev, const struct amba_id *id)
-=======
-static int __init etm_probe(struct amba_device *dev, struct amba_id *id)
->>>>>>> 218e18a... Added missing Android common patches that were previously included but overwritten by the 2.3.4 code drop, Samsung have not applied any new patches from the Android common kernel tree to their kernels.
 {
 	struct tracectx *t = &tracer;
 	int ret = 0;
