@@ -341,10 +341,6 @@ config CPU_FREQ_GOV_INTELLIDEMAND
 	help
 	  'intellidemand' - an intelligent ondemand governor
 
-config CPU_FREQ_GOV_WHEATLEY
-	tristate "'wheatley' cpufreq governor"
-	depends on CPU_FREQ
-
 config CPU_FREQ_DVFS_MONITOR
 	bool "dvfs monitor"
 	depends on CPU_FREQ
