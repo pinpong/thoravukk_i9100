@@ -106,7 +106,7 @@ static int g_nMajor;
 #include "VibeOSKernelLinuxTime.c"
 #endif
 
-#define VIBRATOR_LEVEL_DEFAULT	6
+#define VIBRATOR_LEVEL_DEFAULT	4
 #define VIBRATOR_DUTY_DEFAULT	38000
 static const int vibrator_duty_levels[] = { 26000, 28000, 30000, 32000, 34000, 36000, VIBRATOR_DUTY_DEFAULT };
 static int vibrator_level = VIBRATOR_LEVEL_DEFAULT;
