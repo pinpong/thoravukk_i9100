@@ -294,10 +294,6 @@ config CPU_FREQ_GOV_SCARY
 	  'scary' - a governor for cabbages
 	  If in doubt, say N.
 
-config CPU_FREQ_GOV_LAZY
-        tristate "'lazy' cpufreq governor"
-        depends on CPU_FREQ
-
 config CPU_FREQ_GOV_LAGFREE
         tristate "'lagfree' cpufreq governor"
         depends on CPU_FREQ
