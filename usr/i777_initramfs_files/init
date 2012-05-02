@@ -26,7 +26,7 @@ busybox dd bs=512 if=${BOOT_IMAGE} skip=$load_offset count=$load_len | busybox z
 if busybox grep -q 1 /sys/class/power_supply/battery/batt_lp_charging ; then
 	# low power mode
 	busybox cp lpm.rc init.rc
-	busybox rm init.smdkv310.rc
+	busybox rm init.smdk4210.rc
 fi
 
 busybox umount /sys
