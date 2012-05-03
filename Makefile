@@ -373,7 +373,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -floop-interchange -floop-strip-mine
 		   -ffast-math -ftree-vectorize \
 		   -mtune=cortex-a9 -pipe -floop-block \
-		   -mfpu=neon -mfloat-abi=softfp -mfloat-abi=softfp 
+		   -mfpu=neon -mfloat-abi=softfp -mfloat-abi=softfp
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
 KBUILD_AFLAGS   := -D__ASSEMBLY__
@@ -566,7 +566,7 @@ all: vmlinux
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= -Os
 else
-KBUILD_CFLAGS	+= -Ofast
+KBUILD_CFLAGS	+= -O3
 endif
 
 ifdef CONFIG_CC_CHECK_WARNING_STRICTLY
