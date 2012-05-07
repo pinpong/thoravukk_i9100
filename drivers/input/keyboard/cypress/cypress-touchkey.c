@@ -69,8 +69,8 @@ touchkey register
 #include <linux/wakelock.h>
 
 #define ENABLE_BL	1
-#define BL_ALWAYS_ON	-1
-#define BL_ALWAYS_OFF	-2
+#define BL_ALWAYS_ON	0
+#define BL_ALWAYS_OFF	-1
 
 /* Breathing defaults */
 #define BREATHING_STEP_INRC	50
