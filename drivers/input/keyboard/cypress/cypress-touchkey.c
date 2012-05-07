@@ -69,8 +69,8 @@ touchkey register
 #include <linux/wakelock.h>
 
 #define ENABLE_BL	1
-#define BL_ALWAYS_ON	0
-#define BL_ALWAYS_OFF	-1
+#define BL_ALWAYS_ON	-1
+#define BL_ALWAYS_OFF	-2
 #ifdef CONFIG_TARGET_CM_KERNEL
 #define DISABLE_BL	2
 #else
