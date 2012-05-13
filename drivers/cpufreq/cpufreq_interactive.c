@@ -500,7 +500,6 @@ static void cpufreq_interactive_boost(void)
 	unsigned long flags;
 	struct cpufreq_interactive_cpuinfo *pcpu;
 
-	trace_cpufreq_interactive_boost(hispeed_freq);
 	spin_lock_irqsave(&up_cpumask_lock, flags);
 
 	for_each_online_cpu(i) {
@@ -540,8 +539,10 @@ static void cpufreq_interactive_input_event(struct input_handle *handle,
 					    unsigned int type,
 					    unsigned int code, int value)
 {
-	if (input_boost_val && type == EV_SYN && code == SYN_REPORT)
+	if (input_boost_val && type == EV_SYN && code == SYN_REPORT) {
+		trace_cpufreq_interactive_boost("input");
 		cpufreq_interactive_boost();
+	}
 }
 
 static void cpufreq_interactive_input_open(struct work_struct *w)
@@ -769,15 +770,35 @@ static ssize_t store_boost(struct kobject *kobj, struct attribute *attr,
 
 	boost_val = val;
 
-	if (boost_val)
+	if (boost_val) {
+		trace_cpufreq_interactive_boost("on");
 		cpufreq_interactive_boost();
-	else
-		trace_cpufreq_interactive_unboost(hispeed_freq);
+	} else {
+		trace_cpufreq_interactive_unboost("off");
+	}
 
 	return count;
 }
 
 define_one_global_rw(boost);
+
+static ssize_t store_boostpulse(struct kobject *kobj, struct attribute *attr,
+				const char *buf, size_t count)
+{
+	int ret;
+	unsigned long val;
+
+	ret = kstrtoul(buf, 0, &val);
+	if (ret < 0)
+		return ret;
+
+	trace_cpufreq_interactive_boost("pulse");
+	cpufreq_interactive_boost();
+	return count;
+}
+
+static struct global_attr boostpulse =
+	__ATTR(boostpulse, 0200, NULL, store_boostpulse);
 
 static struct attribute *interactive_attributes[] = {
 	&hispeed_freq_attr.attr,
@@ -787,6 +808,7 @@ static struct attribute *interactive_attributes[] = {
 	&timer_rate_attr.attr,
 	&input_boost.attr,
 	&boost.attr,
+	&boostpulse.attr,
 	NULL,
 };
 
@@ -794,9 +816,6 @@ static struct attribute_group interactive_attr_group = {
 	.attrs = interactive_attributes,
 	.name = "interactive",
 };
-
-void start_interactive(void);
-void stop_interactive(void);
 
 static int cpufreq_governor_interactive(struct cpufreq_policy *policy,
 		unsigned int event)
@@ -841,7 +860,6 @@ static int cpufreq_governor_interactive(struct cpufreq_policy *policy,
 		if (atomic_inc_return(&active_count) > 1)
 			return 0;
 
-		start_interactive();
 		rc = sysfs_create_group(cpufreq_global_kobject,
 				&interactive_attr_group);
 		if (rc)
@@ -877,7 +895,7 @@ static int cpufreq_governor_interactive(struct cpufreq_policy *policy,
 		input_unregister_handler(&cpufreq_interactive_input_handler);
 		sysfs_remove_group(cpufreq_global_kobject,
 				&interactive_attr_group);
-		stop_interactive();
+
 		break;
 
 	case CPUFREQ_GOV_LIMITS:
@@ -912,30 +930,11 @@ static struct notifier_block cpufreq_interactive_idle_nb = {
 	.notifier_call = cpufreq_interactive_idle_notifier,
 };
 
-void start_interactive(void)
-{
-	struct sched_param param = { .sched_priority = MAX_RT_PRIO-1 };
-
-	up_task = kthread_create(cpufreq_interactive_up_task, NULL,
-				 "kinteractiveup");
-
-	sched_setscheduler_nocheck(up_task, SCHED_FIFO, &param);
-	get_task_struct(up_task);
-
-	idle_notifier_register(&cpufreq_interactive_idle_nb);
-}
-
-void stop_interactive(void)
-{
-	kthread_stop(up_task);
-	put_task_struct(up_task);
-	idle_notifier_unregister(&cpufreq_interactive_idle_nb);
-}
-
 static int __init cpufreq_interactive_init(void)
 {
 	unsigned int i;
 	struct cpufreq_interactive_cpuinfo *pcpu;
+	struct sched_param param = { .sched_priority = MAX_RT_PRIO-1 };
 
 	go_hispeed_load = DEFAULT_GO_HISPEED_LOAD;
 	min_sample_time = DEFAULT_MIN_SAMPLE_TIME;
@@ -949,6 +948,14 @@ static int __init cpufreq_interactive_init(void)
 		pcpu->cpu_timer.function = cpufreq_interactive_timer;
 		pcpu->cpu_timer.data = i;
 	}
+
+	up_task = kthread_create(cpufreq_interactive_up_task, NULL,
+				 "kinteractiveup");
+	if (IS_ERR(up_task))
+		return PTR_ERR(up_task);
+
+	sched_setscheduler_nocheck(up_task, SCHED_FIFO, &param);
+	get_task_struct(up_task);
 
 	/* No rescuer thread, bind to CPU queuing the work for possibly
 	   warm cache (probably doesn't matter much). */
@@ -964,6 +971,7 @@ static int __init cpufreq_interactive_init(void)
 	spin_lock_init(&down_cpumask_lock);
 	mutex_init(&set_speed_lock);
 
+	idle_notifier_register(&cpufreq_interactive_idle_nb);
 	INIT_WORK(&inputopen.inputopen_work, cpufreq_interactive_input_open);
 	return cpufreq_register_governor(&cpufreq_gov_interactive);
 
