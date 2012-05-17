@@ -1400,7 +1400,10 @@ static unsigned short ld9042_a2_19_30[] = {
 static unsigned short *ld9042_22gamma_table[] = {
 	ld9042_a2_22_30,
 	ld9042_a2_22_40,
+	ld9042_a2_22_50,
+	ld9042_a2_22_60,
 	ld9042_a2_22_70,
+	ld9042_a2_22_80,
 	ld9042_a2_22_90,
 	ld9042_a2_22_100,
 	ld9042_a2_22_110,
@@ -1418,13 +1421,17 @@ static unsigned short *ld9042_22gamma_table[] = {
 	ld9042_a2_22_230,
 	ld9042_a2_22_240,
 	ld9042_a2_22_250,
+	ld9042_a2_22_280,
 	ld9042_a2_22_300,
 };
 
 static unsigned short *ld9042_19gamma_table[] = {
 	ld9042_a2_19_30,
 	ld9042_a2_19_40,
+	ld9042_a2_19_50,
+	ld9042_a2_19_60,
 	ld9042_a2_19_70,
+	ld9042_a2_19_80,
 	ld9042_a2_19_90,
 	ld9042_a2_19_100,
 	ld9042_a2_19_110,
@@ -1442,6 +1449,7 @@ static unsigned short *ld9042_19gamma_table[] = {
 	ld9042_a2_19_230,
 	ld9042_a2_19_240,
 	ld9042_a2_19_250,
+	ld9042_a2_19_280,
 	ld9042_a2_19_300,
 };
 

@@ -1619,14 +1619,12 @@ static const unsigned short *psm2_a2_22Gamma_set[] = {
 };
 
 static const unsigned short *psm2_a2_19Gamma_set[] = {
-#if defined(CONFIG_TARGET_LOCALE_NAATT)
-	ld9040_sm2_a2_19_50,
-	ld9040_sm2_a2_19_60,
-#else
 	ld9040_sm2_a2_19_30_dimming,
 	ld9040_sm2_a2_19_40,
-#endif
+	ld9040_sm2_a2_19_50,
+	ld9040_sm2_a2_19_60,
 	ld9040_sm2_a2_19_70,
+	ld9040_sm2_a2_19_80,
 	ld9040_sm2_a2_19_90,
 	ld9040_sm2_a2_19_100,
 	ld9040_sm2_a2_19_110,
@@ -1644,6 +1642,7 @@ static const unsigned short *psm2_a2_19Gamma_set[] = {
 	ld9040_sm2_a2_19_230,
 	ld9040_sm2_a2_19_240,
 	ld9040_sm2_a2_19_250,
+	ld9040_sm2_a2_19_280,
 	ld9040_sm2_a2_19_300,
 };
 
