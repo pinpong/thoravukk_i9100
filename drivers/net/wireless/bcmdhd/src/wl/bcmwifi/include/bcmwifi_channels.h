@@ -65,8 +65,7 @@ typedef uint16 chanspec_t;
 #define WL_CHANSPEC_BAND_SHIFT		12
 #define WL_CHANSPEC_BAND_5G		0x1000
 #define WL_CHANSPEC_BAND_2G		0x2000
-#define INVCHANSPEC				(-1)
-
+#define INVCHANSPEC	255
 
 #define LOWER_20_SB(channel)	(((channel) > CH_10MHZ_APART) ? ((channel) - CH_10MHZ_APART) : 0)
 #define UPPER_20_SB(channel)	(((channel) < (MAXCHANNEL - CH_10MHZ_APART)) ? \
@@ -143,7 +142,7 @@ typedef uint16 chanspec_t;
 #define WL_CHANSPEC_CTL_SB_UU		WL_CHANSPEC_CTL_SB_LUU
 #define WL_CHANSPEC_CTL_SB_L		WL_CHANSPEC_CTL_SB_LLL
 #define WL_CHANSPEC_CTL_SB_U		WL_CHANSPEC_CTL_SB_LLU
-#define WL_CHANSPEC_CTL_SB_LOWER 	WL_CHANSPEC_CTL_SB_LLL
+#define WL_CHANSPEC_CTL_SB_LOWER	WL_CHANSPEC_CTL_SB_LLL
 #define WL_CHANSPEC_CTL_SB_UPPER	WL_CHANSPEC_CTL_SB_LLU
 
 #define WL_CHANSPEC_BW_MASK		0x3800
@@ -162,7 +161,7 @@ typedef uint16 chanspec_t;
 #define WL_CHANSPEC_BAND_3G		0x4000
 #define WL_CHANSPEC_BAND_4G		0x8000
 #define WL_CHANSPEC_BAND_5G		0xc000
-#define INVCHANSPEC				(-1)
+#define INVCHANSPEC				255
 
 #define LOWER_20_SB(channel)		(((channel) > CH_10MHZ_APART) ? \
 					((channel) - CH_10MHZ_APART) : 0)
