@@ -24,5 +24,5 @@ file /stage1/init usr/galaxys2_initramfs_files/init 755 0 0
 dir /sys 755 0 0
 dir /mnt 755 0 0
 dir /mnt/.lfs 755 0 0
-file /stage1/boot.cpio /home/pinpong/android/boot/ramdisk.cpio 644 0 0
-file /stage1/recovery.cpio /home/pinpong/android/boot/ramdisk-recovery.cpio 644 0 0
+file /stage1/boot.cpio /home/pinpong/android/i9100/boot/ramdisk.cpio 644 0 0
+file /stage1/recovery.cpio /home/pinpong/android/i9100/boot/ramdisk-recovery.cpio 644 0 0
