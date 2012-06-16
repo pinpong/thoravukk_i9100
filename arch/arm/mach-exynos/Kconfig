@@ -463,7 +463,7 @@ config EXYNOS_PM_HOTPLUG
 choice
 	prompt "Dynamic CPU HOTPLUG Policy"
 	depends on EXYNOS_PM_HOTPLUG
-	default LEGACY_HP_POLICY if CPU_EXYNOS4210
+	default STAND_ALONE_POLICY if CPU_EXYNOS4210
 	default DVFS_NR_RUNNING_POLICY if (CPU_EXYNOS4212 || CPU_EXYNOS4412 || CPU_EXYNOS5250)
 
 config STAND_ALONE_POLICY
@@ -480,8 +480,8 @@ config DVFS_NR_RUNNING_POLICY
 config NR_RUNNING_POLICY
 	bool "nr_running CPU hotplug"
 
-config LEGACY_HP_POLICY
-	bool "Gingerbread legacy CPU hotplug"
+config S5PV310_PM_HOTPLUG_POLICY
+	bool "Old S5PV310 CPU hotplug"
 
 endchoice
 endmenu

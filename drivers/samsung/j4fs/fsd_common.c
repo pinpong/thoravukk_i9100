@@ -1633,12 +1633,12 @@ error1:
 	return J4FS_FAIL;
 }
 
+extern DWORD valid_offset[128][2];
 // invalidate old valid files
 int fsd_mark_invalid()
 {
 	DWORD offset;
 	j4fs_header *header;
-	DWORD valid_offset[128][2];
 	int index=0;
 	int i,j;
 	j4fs_mst *mst;

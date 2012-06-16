@@ -38,7 +38,7 @@ static ssize_t charge_current_store(struct device *dev, struct device_attribute 
 		charge_current_misc = (temp2<MAX_CURRENT_MISC) ? temp2 : MAX_CURRENT_MISC;
 		charge_current_usb = (temp3<MAX_CURRENT_USB) ? temp3 : MAX_CURRENT_USB;
 	}
-	return count;	
+	return count;
 }
 
 static DEVICE_ATTR(charge_current, S_IRUGO | S_IWUGO, charge_current_show, charge_current_store);
@@ -60,7 +60,7 @@ static struct miscdevice charge_current_device = {
 void charge_current_start(void)
 {
 	printk("Initializing charge current control interface\n");
-	
+
 	misc_register(&charge_current_device);
 	if (sysfs_create_group(&charge_current_device.this_device->kobj,
 				&charge_current_group) < 0) {

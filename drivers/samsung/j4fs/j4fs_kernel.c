@@ -675,6 +675,7 @@ error1:
 
 }
 
+DWORD valid_offset[128][2];
 int j4fs_readdir (struct file * filp, void * dirent, filldir_t filldir)
 {
 	unsigned int curoffs, offset, cur_link;
@@ -683,7 +684,6 @@ int j4fs_readdir (struct file * filp, void * dirent, filldir_t filldir)
 	struct j4fs_inode *raw_inode;
 	int i,j, nErr;
 	BYTE *buf;
-	DWORD valid_offset[128][2];
 	int count=0;
 
 	if(j4fs_panic==1) {
@@ -1522,4 +1522,3 @@ const struct super_operations j4fs_sops = {
 	.read_inode	= j4fs_read_inode,
 #endif
 };
-

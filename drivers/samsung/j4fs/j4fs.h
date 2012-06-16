@@ -490,4 +490,3 @@ extern int FlashDevSpecial(j4fs_device_info *dev_ptr, DWORD scmd);
 #else
 #define TOUT(p) printf p
 #endif
-

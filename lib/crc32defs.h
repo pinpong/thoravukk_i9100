@@ -70,4 +70,3 @@
 	CRC_BE_BITS & CRC_BE_BITS-1
 # error "CRC_BE_BITS must be one of {1, 2, 4, 8, 32, 64}"
 #endif
-
